@@ -1,0 +1,139 @@
+/* Import Google Fonts for a modern, clean look */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap');
+
+/* Reset default browser styles (margin/padding) and ensure border-box sizing for predictable layouts */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Verdana', sans-serif;
+}
+
+/* Base Body Styles: Center all content horizontally and vertically within the viewport */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    /* Soft light backdrop color */
+    background: hsl(300, 29%, 97%);
+}
+
+/* Login Box: Main container for the authentication form */
+.login-box {
+    display: flex;
+    justify-content: left;
+    flex-direction: column;
+    width: 440px;
+    height: 480px;
+    padding: 50px;
+}
+
+/* Login Header: Contains the 'LOG IN' text or branding */
+.login-header {
+    text-align: left;
+    margin: 30px 0 50px 0;
+}
+
+/* Header Text styling: Large, bold, and purple-toned */
+.login-header header {
+    color: #690ee0;
+    font-size: 50px;
+    font-weight: 600px;
+}
+
+/* Input Fields: Rounded edges with subtle shadows for a premium feel */
+.input-box .input-field {
+    width: 250px;
+    height: 30px;
+    font-size: 16px;
+    padding: 0 30px;
+    margin-bottom: 17px;
+    border-radius: 50px;
+    border: none;
+    /* Subtle grey shadow to make inputs 'pop' from the background */
+    box-shadow: 0px 5px 10px 1px rgb(224, 226, 233);
+    outline: none;
+    /* Smooth transition for hover/focus effects */
+    transition: .5s;
+}
+
+/* Placeholder styling: Darker text for better legibility */
+::placeholder {
+    font-weight: 400;
+    color: rgb(9, 10, 10);
+}
+
+/* Focus State: Adds spacing when an input is being typed into (interactive feedback) */
+.input-field:focus {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 80px;
+}
+
+/* Section styling for checkboxes or labels */
+section {
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    color: rgb(3, 3, 3);
+}
+
+/* Checkbox spacing */
+#check {
+    margin-right: 12px;
+}
+
+/* Links: Remove default underlines and handle hover state */
+a {
+    text-decoration-style: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+/* Light gray color for secondary links */
+section a {
+    color: #bbb;
+}
+
+/* Submit Container positioning */
+.input-submit {
+    position: center;
+}
+
+/* Submit Button: Solid black with rounded corners and pointer cursor */
+.submit-btn {
+    width: 250px;
+    height: 30px;
+    background: #0b0b0b;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: .3s;
+}
+
+/* Label within the submit button area */
+.input-submit label {
+    position: center;
+    top: 15%;
+    left: 50%;
+    color: #1d057d;
+    cursor: pointer;
+}
+
+/* Hover Effect: Darken button and slightly scale up for interactivity */
+.submit-btn:hover {
+    background: rgb(20, 20, 20);
+    transform: scale(1.05, 1);
+}
+
+/* Signup Link styling */
+.sign-up link {
+    text-align: center;
+    font-size: 16px;
+    margin-top: 21px;
+    color: rgb(93, 45, 247);
+    font-weight: 400;
+}

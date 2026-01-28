@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phonetic Match Score</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <div class="card">
+        <h1>Phonetic Match Calculator</h1>
+        <form id="scoreForm">
+            <label for="name1">First Name</label>
+            <input type="text" id="name1" name="name1" required />
+
+            <label for="name2">Second Name</label>
+            <input type="text" id="name2" name="name2" required />
+
+            <button type="submit">Calculate Score</button>
+        </form>
+        <div id="result" class="result"></div>
+    </div>
+    <script>
+        const form = document.getElementById('scoreForm');
+        const resultDiv = document.getElementById('result');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name1 = document.getElementById('name1').value.trim();
+            const name2 = document.getElementById('name2').value.trim();
+            if (!name1 || !name2) {
+                resultDiv.textContent = 'Please enter both names.';
+                return;
+            }
+            try {
+                const response = await fetch('/score', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name1, name2 })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    resultDiv.textContent = `Score: ${data.score}%`;
+                } else {
+                    resultDiv.textContent = `Error: ${data.detail || 'Unknown error'}`;
+                }
+            } catch (err) {
+                resultDiv.textContent = 'Network error.';
+            }
+        });
+    </script>
+</body>
+</html>

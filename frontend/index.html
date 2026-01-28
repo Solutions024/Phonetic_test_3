@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Define the character encoding and viewport for responsiveness -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Name Similarity Checker</title>
+
+    <!-- Load React, ReactDOM, and Babel from CDNs to enable React without a build step -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Load Tailwind CSS CDN for utility-first styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Load Axios for making HTTP requests to the backend API -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+    <style>
+        /* Import premium typography from Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Outfit:wght@700&display=swap');
+
+        /* Set global font for the body */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Set specific font for the similarity percentage display */
+        .similarity-score {
+            font-family: 'Outfit', sans-serif;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Top-right logout button container with fixed positioning -->
+    <div style="position:fixed;top:16px;right:16px;z-index:60;">
+        <!-- Click handler triggers the handleLogout function defined below -->
+        <button id="logoutBtn" onclick="handleLogout()"
+            style="background:#30ad8c;color:#fff;border:none;padding:8px 14px;border-radius:999px;box-shadow:0 2px 6px rgba(34,211,238,0.4);cursor:pointer;font-weight:600;border:1px solid #22d3ee;">Logout</button>
+    </div>
+
+    <!-- The root mounting point for the React application -->
+    <div id="root"></div>
+
+    <!-- Load the session manager script to handle authentication state -->
+    <script src="session-manager.js"></script>
+
+    <!-- Babel script block for inline React (JSX) code -->
+    <script type="text/babel">
+        // Destructure useState hook from the React global object
+        const { useState } = React;
+
+        /**
+         * Main UI Component for the Name Similarity Matcher.
+         */
+        const NameSimilarityMatch = () => {
+            // State: stores the first input name
+            const [name1, setName1] = useState('');
+            // State: stores the second input name
+            const [name2, setName2] = useState('');
+            // State: stores the resulting similarity score (%)
+            const [similarity, setSimilarity] = useState(null);
+            // State: stores the similarity label (e.g., "Strong Match")
+            const [label, setLabel] = useState("");
+            // State: tracks if the API request is in progress
+            const [loading, setLoading] = useState(false);
+
+            /**
+             * Function to trigger the matching logic on the backend.
+             */
+            const handleMatch = async () => {
+                // Ensure both fields are populated before sending
+                if (!name1 || !name2) {
+                    alert("Please enter both names");
+                    return;
+                }
+
+                setLoading(true); // Disable button and show loading state
+                try {
+                    // Send POST request to the /match endpoint with name payloads
+                    const response = await axios.post('/match', {
+                        name1: name1,
+                        name2: name2
+                    });
+                    // Update state with the results from backend response
+                    setSimilarity(response.data.similarity_score);
+                    setLabel(response.data.similarity_label);
+                } catch (error) {
+                    console.error("Error fetching similarity:", error);
+                    setSimilarity("Error");
+                    setLabel("Error");
+                } finally {
+                    setLoading(false); // Re-enable button
+                }
+            };
+
+            return (
+                /* Main Page Container with Gradient Background and Flexbox Layout */
+                <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-blue-50 to-cyan-100 flex flex-col items-center justify-center font-serif p-4 relative overflow-hidden">
+
+                    {/* App Title with Gradient Text styling */}
+                    <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent mb-12 tracking-tight text-center">
+                        NAME SIMILARITY CHECKER
+                    </h1>
+
+                    {/* Inputs and Match Button wrapped in a form to support Enter key submission */}
+                    <form
+                        onSubmit={(e) => { e.preventDefault(); handleMatch(); }}
+                        className="flex flex-col items-center w-full max-w-2xl"
+                    >
+                        {/* Inputs Section Wrapper */}
+                        <div className="flex flex-col md:flex-row gap-8 mb-10 w-full justify-center items-center">
+                            {/* Input 1 Container */}
+                            <div className="flex flex-col items-center">
+                                <label className="text-cyan-700 mb-2 font-semibold">Name-1:</label>
+                                <input
+                                    type="text"
+                                    value={name1}
+                                    onChange={(e) => setName1(e.target.value)}
+                                    className="w-64 h-12 rounded-2xl border-none bg-white shadow-md px-4 focus:ring-2 focus:ring-cyan-500 outline-none transition-all text-gray-800"
+                                />
+                            </div>
+
+                            {/* Input 2 Container */}
+                            <div className="flex flex-col items-center">
+                                <label className="text-cyan-700 mb-2 font-semibold">Name-2:</label>
+                                <input
+                                    type="text"
+                                    value={name2}
+                                    onChange={(e) => setName2(e.target.value)}
+                                    className="w-64 h-12 rounded-2xl border-none bg-white shadow-md px-4 focus:ring-2 focus:ring-cyan-500 outline-none transition-all text-gray-800"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Action Button: Matches the theme and handles loading state */}
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-10 py-2 rounded-full border border-cyan-300 shadow-lg shadow-cyan-400/40 transition-all active:scale-95 mb-12"
+                        >
+                            {loading ? "Calculating..." : "Match"}
+                        </button>
+                    </form>
+
+                    {/* Result Card: Displays the similarity status and percentage */}
+                    <div className="w-full max-w-md bg-white rounded-3xl p-6 shadow-lg shadow-cyan-400/30 min-h-48 flex flex-col border border-cyan-200">
+                        <span className="text-cyan-700 font-semibold mb-4 text-center block">Result:</span>
+
+                        <div className="flex-1 flex flex-col items-center justify-center gap-2">
+                            {/* Similarity Label: Always show if we have a result */}
+                            {label && (
+                                <div className={`text-2xl font-bold text-center ${similarity <= 30 ? 'text-red-500' : 'text-cyan-600'}`}>
+                                    {label}
+                                </div>
+                            )}
+
+                            {/* Percentage Score: Only show if > 30% and < 100% */}
+                            {similarity !== null && similarity > 30 && similarity < 100 && (
+                                <div className="text-5xl font-bold text-cyan-600 similarity-score">
+                                    {similarity}%
+                                </div>
+                            )}
+
+                            {/* Placeholder when no search has been done yet */}
+                            {similarity === null && !loading && (
+                                <div className="text-4xl font-bold text-gray-300">—</div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="absolute bottom-0 w-full flex justify-between px-10 pointer-events-none">
+                    </div>
+                </div>
+            );
+        };
+
+        // Initialize React Root and Render the component into the DOM
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<NameSimilarityMatch />);
+    </script>
+
+    <script>
+        /**
+         * Global logout handler: clears authentication state and redirects to login.
+         */
+        function handleLogout() {
+            try {
+                // Remove all locally stored session keys to end the session
+                localStorage.removeItem('userId');
+                localStorage.removeItem('username');
+                localStorage.removeItem('userRole');
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('loginTime');
+            } catch (e) {
+                // Silently handle cases where localStorage might be blocked (e.g., privacy settings)
+                console.warn('Logout failed to clear storage');
+            }
+            // Force redirection back to the root (which serves login.html)
+            window.location.href = '/';
+        }
+    </script>
+</body>
+
+</html>

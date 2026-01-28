@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Metadata for character set and responsive design -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nagad Login</title>
+
+    <!-- Load Font Awesome for vector icons (user, key, etc.) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Link to the primary CSS for the login layout -->
+    <link rel="stylesheet" href="login.css">
+
+    <!-- Link to the error handler CSS for the modal popup styling -->
+    <link rel="stylesheet" href="error-handler.css">
+</head>
+
+<body>
+
+    <!-- Decorative background div for aesthetic visual depth -->
+    <div class="bg-decoration"></div>
+
+    <!-- Main Container for the Login Box -->
+    <div class="login-container">
+        <!-- Brand/Logo Header section -->
+        <div class="logo-section">
+            <img src="Logo.png" alt="Logo" class="logo">
+        </div>
+
+        <!-- Login Form: Triggers handleLogin(event) on submission -->
+        <form class="login-form" id="loginForm" onsubmit="handleLogin(event)">
+
+            <!-- Username Input Field with Icon -->
+            <div class="input-group">
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <!-- ID must match the JavaScript lookup logic -->
+                <input type="text" id="username" placeholder="user name" required>
+            </div>
+
+            <!-- Password Input Field with Icon -->
+            <div class="input-group">
+                <div class="icon-wrapper">
+                    <i class="fa-solid fa-key"></i>
+                </div>
+                <input type="password" id="password" placeholder="password" required>
+            </div>
+
+            <!-- Link for password recovery (UX placeholder) -->
+            <div class="forgot-password">
+                <a href="#">Forgot your password?</a>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="login-btn">LOG IN</button>
+        </form>
+    </div>
+
+    <!-- External Script: Provides the showError() functionality -->
+    <script src="error-handler.js"></script>
+
+    <script>
+        function showLoginSuccess(username) {
+            // Navigate to the main application page immediately without a success message
+            window.location.href = '/index.html';
+        }
+
+        /**
+         * handleLogin: Validates input and checks credentials against local storage/hardcoded values
+         * @param {Event} event - The form submission event
+         */
+        function handleLogin(event) {
+            // Prevent the browser's default form submission behavior (page reload)
+            event.preventDefault();
+
+            // Extract values from the DOM and trim whitespace
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+
+            // Initial Client-side Validations
+            if (!username) {
+                showError('VALIDATION_FAILED', 'Username is required');
+                return;
+            }
+
+            if (!password) {
+                showError('VALIDATION_FAILED', 'Password is required');
+                return;
+            }
+
+            // 🔐 SECURITY NOTE: Hardcoded credentials (SINGLE USER 'test'/'test2026')
+            // In a production app, this would involve a fetch() request to a /login API endpoint.
+            const HARDCODED_USERNAME = 'test';
+            const HARDCODED_PASSWORD = 'test2026';
+
+            if (username === HARDCODED_USERNAME && password === HARDCODED_PASSWORD) {
+                // AUTHENTICATION SUCCESS:
+                // Store a minimal 'session' in localStorage so other pages know the user is authenticated.
+                try {
+                    localStorage.setItem('userId', 'test');
+                    localStorage.setItem('username', username);
+                    localStorage.setItem('userRole', 'user');
+                    localStorage.setItem('loginTime', new Date().toISOString());
+                    localStorage.setItem('isLoggedIn', 'true');
+                } catch (e) {
+                    console.warn('localStorage unavailable', e);
+                }
+
+                // Trigger the UI success flow
+                showLoginSuccess(username);
+            } else {
+                // AUTHENTICATION FAILURE:
+                // Inform the user of invalid credentials using the global error UI
+                showError(
+                    'INVALID_CREDENTIALS',
+                    'Invalid username or password'
+                );
+            }
+        }
+    </script>
+
+    <!-- External Script: Auto-redirects to index.html if user is already logged in -->
+    <script src="session-manager.js"></script>
+
+</body>
+
+</html>
